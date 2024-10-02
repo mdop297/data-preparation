@@ -1,5 +1,7 @@
 # Data Preparation 
 simple project to prepare data for mlops project
+This is my hands-on project when learning (this course)[https://www.udemy.com/course/sustainable-and-scalable-machine-learning-project-development/] 
+and the code if from (this repo)[https://github.com/emkademy/cybulde-data-preparation] 
 
 ## Steps to modify the template
 - docker-compose.yaml
@@ -26,3 +28,5 @@ simple project to prepare data for mlops project
     - dask-ml = "~=2024.4"
 
 - run make lock-dependencies
+
+## 
