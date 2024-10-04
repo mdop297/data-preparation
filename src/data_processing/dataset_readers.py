@@ -110,6 +110,40 @@ class GHCDatasetReader(DatasetReader):
 
         return train_df, dev_df, test_df
 
+class JigsawToxicCommentsDatasetReader(DatasetReader):
+    def __init__(self, dataset_dir:str, dataset_name:str, dev_split_ratio:float) -> None:
+        super().__init__(dataset_dir, dataset_name)
+        self.dev_split_ratio = dev_split_ratio
+        self.columns_for_label = ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
+        
+    def _read_data(self) -> tuple[dd.core.DataFrame, dd.core.DataFrame, dd.core.DataFrame]:
+        self.logger.info(f"Reading {self.__class__.__name__}")
+        test_csv_path = os.path.join(self.dataset_dir, "test.csv")
+        test_df = dd.read_csv(test_csv_path)
+        
+        test_labels_csv_path = os.path.join(self.dataset_dir, "test_labels.csv")
+        test_labels_df = dd.read_csv(test_labels_csv_path)
+        
+        test_df = test_df.merge(test_labels_df, on=["id"])
+        test_df = test_df[test_df["toxic"] != -1]
+        test_df = self.get_text_and_label_columns(test_df)
+        
+        train_csv_path = os.path.join(self.dataset_dir, "train.csv")
+        train_df = dd.read_csv(train_csv_path)
+        train_df = self.get_text_and_label_columns(train_df)
+        
+        train_df, dev_df = self.split_dataset(train_df, self.dev_split_ratio, stratify_column="label")
+        
+        return train_df, dev_df, test_df
+        
+        
+    def get_text_and_label_columns(self, df:dd.core.DataFrame) -> dd.core.DataFrame:
+        df["label"] = (df[self.columns_for_label].sum(axis=1) > 0).astype(int)
+        df = df.rename(columns={"comment_text": "text"})
+        return df
+        
+
+# region code for reference 
 
 # class JigsawToxicCommentsDatasetReader(DatasetReader):
 #     def __init__(
@@ -120,7 +154,7 @@ class GHCDatasetReader(DatasetReader):
 #         gcp_project_id: str,
 #         gcp_github_access_token_secret_id: str,
 #         dvc_remote_repo: str,
-#         github_user_name: str,
+#         github_user_name: str, 
 #         version: str,
 #     ) -> None:
 #         super().__init__(
@@ -203,6 +237,7 @@ class GHCDatasetReader(DatasetReader):
 
 #         return train_df, dev_df, test_df
 
+# endregion
 
 class DatasetReaderManager:
     def __init__(

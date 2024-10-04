@@ -23,10 +23,10 @@ class GHCDatsetReaderConfig(DatasetReaderConfig):
     dev_split_ratio: float = MISSING
 
 
-# @dataclass
-# class JigsawToxicCommentsDatasetReaderConfig(DatasetReaderConfig):
-#     _target_: str = "cybulde.data_processing.dataset_readers.JigsawToxicCommentsDatasetReader"
-#     dev_split_ratio: float = MISSING
+@dataclass
+class JigsawToxicCommentsDatasetReaderConfig(DatasetReaderConfig):
+    _target_: str = "src.data_processing.dataset_readers.JigsawToxicCommentsDatasetReader"
+    dev_split_ratio: float = MISSING
 
 
 # @dataclass
@@ -51,11 +51,11 @@ def setup_config() -> None:
     cs.store(
         name="ghc_dataset_reader_schema", node=GHCDatsetReaderConfig, group="dataset_reader_manager/dataset_reader"
     )
-#     cs.store(
-#         name="jtc_dataset_reader_schema",
-#         node=JigsawToxicCommentsDatasetReaderConfig,
-#         group="dataset_reader_manager/dataset_reader",
-#     )
+    cs.store(
+        name="jtc_dataset_reader_schema",
+        node=JigsawToxicCommentsDatasetReaderConfig,
+        group="dataset_reader_manager/dataset_reader",
+    )
 #     cs.store(
 #         name="twitter_dataset_reader_schema",
 #         node=TwitterDatasetReaderConfig,
