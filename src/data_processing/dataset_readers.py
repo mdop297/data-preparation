@@ -142,7 +142,25 @@ class JigsawToxicCommentsDatasetReader(DatasetReader):
         df = df.rename(columns={"comment_text": "text"})
         return df
         
-
+        
+class TwitterDatasetReader(DatasetReader):
+    def __init__(self, dataset_dir:str, dataset_name:str, dev_split_ratio:float, test_split_ratio:float)-> None:
+        super().__init__(dataset_dir, dataset_name)
+        self.dev_split_ratio = dev_split_ratio
+        self.test_split_ratio = test_split_ratio
+        self.columns_for_label = ["cyberbullying_type"]
+        
+    def _read_data(self) -> tuple[dd.core.DataFrame, dd.core.DataFrame, dd.core.DataFrame]:
+        self.logger.info(f"Reading {self.__class__.__name__}")
+        data_csv_path = os.path.join(self.dataset_dir, "cyberbullying_tweets.csv")
+        ddf = dd.read_csv(data_csv_path)
+        ddf = ddf.rename(columns={"tweet_text": "text", "cyberbullying_type": "label"})
+        train_ddf, test_ddf = self.split_dataset(ddf, test_size=self.test_split_ratio, stratify_column="label")
+        train_ddf, dev_ddf = self.split_dataset(train_ddf, test_size=self.dev_split_ratio, stratify_column="label")
+        
+        return train_ddf, dev_ddf, test_ddf
+        
+        
 # region code for reference 
 
 # class JigsawToxicCommentsDatasetReader(DatasetReader):

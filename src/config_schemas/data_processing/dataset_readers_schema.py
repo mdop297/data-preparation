@@ -29,11 +29,11 @@ class JigsawToxicCommentsDatasetReaderConfig(DatasetReaderConfig):
     dev_split_ratio: float = MISSING
 
 
-# @dataclass
-# class TwitterDatasetReaderConfig(DatasetReaderConfig):
-#     _target_: str = "cybulde.data_processing.dataset_readers.TwitterDatasetReader"
-#     dev_split_ratio: float = MISSING
-#     test_split_ratio: float = MISSING
+@dataclass
+class TwitterDatasetReaderConfig(DatasetReaderConfig):
+    _target_: str = "src.data_processing.dataset_readers.TwitterDatasetReader"
+    dev_split_ratio: float = MISSING
+    test_split_ratio: float = MISSING
 
 
 @dataclass
@@ -56,8 +56,8 @@ def setup_config() -> None:
         node=JigsawToxicCommentsDatasetReaderConfig,
         group="dataset_reader_manager/dataset_reader",
     )
-#     cs.store(
-#         name="twitter_dataset_reader_schema",
-#         node=TwitterDatasetReaderConfig,
-#         group="dataset_reader_manager/dataset_reader",
-#     )
+    cs.store(
+        name="twitter_dataset_reader_schema",
+        node=TwitterDatasetReaderConfig,
+        group="dataset_reader_manager/dataset_reader",
+    )
