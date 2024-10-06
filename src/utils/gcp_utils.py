@@ -1,9 +1,11 @@
-from google.cloud import secretmanager
 import google_crc32c
+
+from google.cloud import secretmanager
+
 
 # investigate this function
 def access_secret_version(
-    project_id: str, secret_id: str, version_id: str="1"
+    project_id: str, secret_id: str, version_id: str = "1"
 ) -> secretmanager.AccessSecretVersionResponse:
     """
     Access the payload for the given secret version if one exists. The version
@@ -20,9 +22,9 @@ def access_secret_version(
     response = client.access_secret_version(request={"name": name})
 
     # Verify payload checksum.
-    crc32c = google_crc32c.Checksum()
-    crc32c.update(response.payload.data)
-    if response.payload.data_crc32c != int(crc32c.hexdigest(), 16):
+    crc32c = google_crc32c.Checksum() # type: ignore
+    crc32c.update(response.payload.data) # type: ignore
+    if response.payload.data_crc32c != int(crc32c.hexdigest(), 16): # type: ignore
         print("Data corruption detected.")
         return response
 
@@ -30,5 +32,5 @@ def access_secret_version(
     #
     # WARNING: Do not print the secret in a production environment - this
     # snippet is showing how to access the secret material.
-    payload = response.payload.data.decode("UTF-8")
-    return payload
+    payload = response.payload.data.decode("UTF-8") 
+    return payload # type: ignore

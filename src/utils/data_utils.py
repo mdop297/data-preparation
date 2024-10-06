@@ -2,8 +2,8 @@ from shutil import rmtree
 from typing import Optional
 
 import dask.dataframe as dd
-import psutil
 import pandas as pd
+import psutil
 
 from src.utils.gcp_utils import access_secret_version
 from src.utils.utils import run_shell_command
