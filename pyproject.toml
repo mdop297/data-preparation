@@ -21,6 +21,7 @@ dask = {version = "~=2024.9.1", extras = ["complete"]}
 distributed = "~=2024.9.1"
 dask-cloudprovider = {version = "2024.9.1", extras=["gcp"]}
 dask-ml = "~=2024.4"
+bokeh = "~=3.6.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "~=8.3.3"

@@ -1,0 +1,111 @@
+version: v9
+data_local_save_dir: ./data/raw
+dvc_remote_repo: https://github.com/mdop297/data-versioning-with-DVC.git
+dvc_data_folder: data/raw
+github_user_name: mdop297
+github_access_token_secret_id: mdop-data-github-access-token
+infrastructure:
+  project_id: cloud-server-435706
+  zone: asia-southeast1-a
+  network: default
+dataset_reader_manager:
+  _target_: src.data_processing.dataset_readers.DatasetReaderManager
+  dataset_readers:
+    ghc:
+      _target_: src.data_processing.dataset_readers.GHCDatasetReader
+      dataset_dir: ./data/raw/ghc
+      dataset_name: ghc
+      gcp_project_id: cloud-server-435706
+      gcp_github_access_token_secret_id: mdop-data-github-access-token
+      dvc_remote_repo: https://github.com/mdop297/data-versioning-with-DVC.git
+      github_user_name: mdop297
+      version: v9
+      dev_split_ratio: 0.3
+    jtc:
+      _target_: src.data_processing.dataset_readers.JigsawToxicCommentsDatasetReader
+      dataset_dir: ./data/raw/jigsaw-toxic-comment
+      dataset_name: jtc
+      gcp_project_id: cloud-server-435706
+      gcp_github_access_token_secret_id: mdop-data-github-access-token
+      dvc_remote_repo: https://github.com/mdop297/data-versioning-with-DVC.git
+      github_user_name: mdop297
+      version: v9
+      dev_split_ratio: 0.06
+    twitter:
+      _target_: src.data_processing.dataset_readers.TwitterDatasetReader
+      dataset_dir: ./data/raw/twitter
+      dataset_name: twitter
+      gcp_project_id: cloud-server-435706
+      gcp_github_access_token_secret_id: mdop-data-github-access-token
+      dvc_remote_repo: https://github.com/mdop297/data-versioning-with-DVC.git
+      github_user_name: mdop297
+      version: v9
+      dev_split_ratio: 0.3
+      test_split_ratio: 0.2
+  repartition: true
+  available_memory: 3750000000.0
+dataset_cleaner_manager:
+  _target_: src.data_processing.dataset_cleaners.DatasetCleanerManager
+  dataset_cleaners:
+    stop_words:
+      _target_: src.data_processing.dataset_cleaners.StopwordsDatasetCleaner
+    lower_case:
+      _target_: src.data_processing.dataset_cleaners.LowerCaseDatasetCleaner
+    url:
+      _target_: src.data_processing.dataset_cleaners.URLDatasetCleaner
+    punctuation:
+      _target_: src.data_processing.dataset_cleaners.PunctuationDatasetCleaner
+      punctuation: '!"#$%&''()*+,-./:;<=>?@[\]^_`{|}~'
+    non_letters:
+      _target_: src.data_processing.dataset_cleaners.NonLetterDatasetCleaner
+    new_line:
+      _target_: src.data_processing.dataset_cleaners.NewLineCharacterDatasetCleaner
+    non_ascii:
+      _target_: src.data_processing.dataset_cleaners.NonASCIIDatasetCleaner
+    referance:
+      _target_: src.data_processing.dataset_cleaners.ReferenceToAccountDatasetCleaner
+    re_tweet:
+      _target_: src.data_processing.dataset_cleaners.ReTweetDatasetCleaner
+    spell_correction:
+      _target_: src.data_processing.dataset_cleaners.SpellCorrectionDatasetCleaner
+      spell_correction_model:
+        _target_: src.utils.utils.SpellCorrectionModel
+        max_dictionary_edit_distance: 2
+        prefix_length: 7
+        count_threshold: 1
+dask_cluster:
+  _target_: dask_cloudprovider.gcp.GCPCluster
+  n_workers: 3
+  projectid: cloud-server-435706
+  zone: asia-southeast1-a
+  network: default
+  network_projectid: cloud-server-435706
+  machine_type: n1-standard-1
+  source_image: projects/ubuntu-os-cloud/global/images/ubuntu-minimal-2004-focal-v20220203
+  docker_image: asia-southeast1-docker.pkg.dev/cloud-server-435706/mdop/data-processing:edb72943-de34-4aea-871b-95be144e6313
+  docker_args: '--log-driver=gcplogs
+
+    '
+  extra_bootstrap:
+  - gcloud auth configure-docker --quiet asia-southeast1-docker.pkg.dev
+  ngpus: 0
+  gpu_type: null
+  filesystem_size: 50
+  disk_type: pd-standard
+  on_host_maintenance: TERMINATE
+  worker_class: dask.distributed.Nanny
+  worker_options:
+    nthreads: 1
+  env_vars: {}
+  scheduler_options: {}
+  silence_logs: null
+  asynchronous: null
+  security: true
+  preemptible: false
+  debug: false
+  instance_labels: null
+  service_account: null
+  service_account_credentials: null
+processed_data_save_dir: ./data/processed
+docker_image_name: asia-southeast1-docker.pkg.dev/cloud-server-435706/mdop/data-processing
+docker_image_tag: edb72943-de34-4aea-871b-95be144e6313
